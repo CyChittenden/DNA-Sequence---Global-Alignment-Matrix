@@ -1,0 +1,45 @@
+---
+title: "Global Pairwise Sequence Alignment Algorithm"
+author: "Cy Chittenden"
+date: "2/20/2022"
+output: html_document
+---
+
+
+
+#Generating a global alignment matrix from scratch
+```{r}
+alignmentMatrix<-function(aseq1,aseq2){
+  
+  seq1 <- strsplit(aseq1, "")[[1]]
+  seq2 <- strsplit(aseq2, "")[[1]]
+  
+  amatrix<- matrix(0, ncol=length(seq1)+1, nrow=length(seq2)+1) #initialize alignment matrix
+  rownames(amatrix) <-c("", seq2) #set row names
+  colnames(amatrix) <-c("", seq1) #set column names
+  
+  #Generate Scoring Matrix
+  mat1 <- matrix(1, 4, 4)
+  diag(mat1) <- 3
+  dimnames(mat1) <- list(c("A", "C", "G", "T"), c("A", "C", "G", "T"))
+  
+  scoreMat <- mat1[seq1, seq2]
+  #print(scoreMat)
+  
+  #Set 1st row and column values
+  amatrix[,1] <- seq(0, -2*(length(seq2)), -2)
+  amatrix[1,] <- seq(0, -2*(length(seq1)), -2)
+  #print(amatrix)
+  
+  for(i in 1:length(seq2)){
+    for(j in 1:length(seq1)){
+      amatrix[i+1, j+1] <- max((amatrix[i, j] + (scoreMat[j,i])), (amatrix[i, j+1]-2), (amatrix[i+1, j]-2))
+    }
+  }
+  
+  
+    return(amatrix)
+}
+alignmentMatrix("GATCCA", "GATTACA")
+```
+
